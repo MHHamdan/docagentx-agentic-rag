@@ -1,0 +1,102 @@
+# Python cache
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# Python environments
+
+.venv/
+venv/
+env/
+ENV/
+
+# uv
+
+# Keep uv.lock committed for reproducible installs.
+
+# Environment variables and secrets
+
+.env
+.env.*
+!.env.example
+
+# Testing and coverage
+
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Linting and typing caches
+
+.ruff_cache/
+.mypy_cache/
+.pyright/
+.cache/
+
+# Logs
+
+*.log
+logs/
+
+# OS files
+
+.DS_Store
+Thumbs.db
+
+# IDE/editor files
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local backend storage
+
+backend/storage/documents/*
+backend/storage/metadata/*
+backend/storage/extracted_text/*
+
+# Keep empty storage folders if .gitkeep files are added
+
+!backend/storage/documents/.gitkeep
+!backend/storage/metadata/.gitkeep
+!backend/storage/extracted_text/.gitkeep
+
+# Local sample PDFs and private datasets
+
+backend/samples/*
+!backend/samples/.gitkeep
+
+# Local databases
+
+*.db
+*.sqlite
+*.sqlite3
+
+# Vector database local storage
+
+backend/qdrant_storage/
+backend/.qdrant/
+backend/chroma/
+backend/.chroma/
+
+# Build outputs
+
+dist/
+build/
+*.egg-info/
+
+# Frontend future files
+
+frontend/node_modules/
+frontend/dist/
+frontend/.next/
+frontend/.vite/
+
+# Temporary files
+
+tmp/
+temp/
+*.tmp
