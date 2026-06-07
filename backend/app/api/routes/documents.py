@@ -1,6 +1,7 @@
 from fastapi import APIRouter, File, HTTPException, UploadFile
-
+from app.services.document_chunker import chunk_document_text
 from app.services.document_storage import save_uploaded_pdf
+from app.services.pdf_extractor import extract_text_from_pdf
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -19,3 +20,21 @@ async def upload_document(file: UploadFile = File(...)) -> dict[str, str | int]:
         filename=file.filename or "unknown.pdf",
         content=content,
     )
+    
+
+
+@router.post("/{document_id}/extract-text")
+def extract_document_text(document_id: str) -> dict[str, str | int]:
+    try:
+        return extract_text_from_pdf(document_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+
+@router.post("/{document_id}/chunk")
+def chunk_document(document_id: str) -> dict[str, str | int]:
+    try:
+        return chunk_document_text(document_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
