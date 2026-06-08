@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 
+
 from app.api.routes.documents import router as documents_router
+from app.api.routes.rag import router as rag_router
 
 app = FastAPI(
     title="DocAgentX API",
@@ -9,6 +11,7 @@ app = FastAPI(
 )
 
 app.include_router(documents_router)
+app.include_router(rag_router)
 
 
 @app.get("/health")
