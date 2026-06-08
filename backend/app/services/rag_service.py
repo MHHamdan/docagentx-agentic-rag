@@ -1,5 +1,9 @@
 from typing import Any
 
+from app.services.citation_verifier import (
+    estimate_answer_confidence,
+    verify_retrieved_citations,
+)
 from app.services.llm_service import generate_answer
 from app.services.qdrant_vector_store import search_qdrant_document
 
@@ -25,12 +29,16 @@ def answer_document_question(
     )
 
     results = retrieval["results"]
+    citation_verification = verify_retrieved_citations(results)
+    answer_confidence = estimate_answer_confidence(results)
 
     return {
         "document_id": document_id,
         "question": question,
         "answer": generate_answer(question, results),
         "citations": [build_citation(result) for result in results],
+        "citation_verification": citation_verification,
+        "answer_confidence": answer_confidence,
         "retrieved_context": results,
         "retrieval_source": "qdrant",
         "trace": [
@@ -41,6 +49,14 @@ def answer_document_question(
             {
                 "step": "qdrant_semantic_search",
                 "details": f"Retrieved top {top_k} chunks from Qdrant using vector similarity.",
+            },
+            {
+                "step": "citation_verification",
+                "details": "Retrieved citations were checked for required fields, text availability, and minimum score.",
+            },
+            {
+                "step": "confidence_scoring",
+                "details": "Answer confidence was estimated from retrieval scores.",
             },
             {
                 "step": "llm_answer_synthesis",
