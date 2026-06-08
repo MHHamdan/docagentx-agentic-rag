@@ -1,6 +1,7 @@
 from typing import Any
 
 from app.services.semantic_search import search_document_chunks
+from app.services.llm_service import generate_answer
 
 
 def build_citation(result: dict[str, Any]) -> dict[str, Any]:
@@ -40,7 +41,7 @@ def answer_document_question(
     return {
         "document_id": document_id,
         "question": question,
-        "answer": generate_grounded_answer(question, results),
+        "answer": generate_answer(question, results),
         "citations": [build_citation(result) for result in results],
         "retrieved_context": results,
         "trace": [
@@ -53,8 +54,8 @@ def answer_document_question(
                 "details": f"Retrieved top {top_k} chunks using cosine similarity.",
             },
             {
-                "step": "grounded_answer",
-                "details": "Answer generated only from retrieved document chunks.",
+                "step": "llm_answer_synthesis",
+                "details": "Answer generated using the configured LLM provider.",
             },
         ],
     }

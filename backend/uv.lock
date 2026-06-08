@@ -165,6 +165,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "fastapi" },
     { name = "fastembed" },
+    { name = "httpx" },
     { name = "numpy" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -184,6 +185,7 @@ dev = [
 requires-dist = [
     { name = "fastapi" },
     { name = "fastembed", specifier = ">=0.8.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "httpx", marker = "extra == 'dev'" },
     { name = "numpy", specifier = ">=2.4.6" },
     { name = "pydantic" },
