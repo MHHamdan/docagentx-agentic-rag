@@ -1,7 +1,7 @@
 from typing import Any
 
-from app.services.semantic_search import search_document_chunks
 from app.services.llm_service import generate_answer
+from app.services.qdrant_vector_store import search_qdrant_document
 
 
 def build_citation(result: dict[str, Any]) -> dict[str, Any]:
@@ -13,24 +13,12 @@ def build_citation(result: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def generate_grounded_answer(question: str, results: list[dict[str, Any]]) -> str:
-    if not results:
-        return "I could not find enough evidence in the document to answer this question."
-
-    evidence_preview = results[0]["text"]
-
-    return (
-        "Based on the retrieved document evidence, the most relevant information is: "
-        f"{evidence_preview}"
-    )
-
-
 def answer_document_question(
     document_id: str,
     question: str,
     top_k: int = 3,
 ) -> dict[str, Any]:
-    retrieval = search_document_chunks(
+    retrieval = search_qdrant_document(
         document_id=document_id,
         query=question,
         top_k=top_k,
@@ -44,14 +32,15 @@ def answer_document_question(
         "answer": generate_answer(question, results),
         "citations": [build_citation(result) for result in results],
         "retrieved_context": results,
+        "retrieval_source": "qdrant",
         "trace": [
             {
                 "step": "query_received",
                 "details": "User question received by RAG endpoint.",
             },
             {
-                "step": "semantic_search",
-                "details": f"Retrieved top {top_k} chunks using cosine similarity.",
+                "step": "qdrant_semantic_search",
+                "details": f"Retrieved top {top_k} chunks from Qdrant using vector similarity.",
             },
             {
                 "step": "llm_answer_synthesis",

@@ -13,6 +13,7 @@ dependencies = [
     "fastembed>=0.8.0",
     "numpy>=2.4.6",
     "httpx>=0.28.1",
+    "qdrant-client>=1.18.0",
 ]
 
 [project.optional-dependencies]

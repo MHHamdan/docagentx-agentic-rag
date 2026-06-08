@@ -4,6 +4,8 @@ from app.services.document_storage import save_uploaded_pdf
 from app.services.pdf_extractor import extract_text_from_pdf
 from app.services.embedding_service import embed_document_chunks
 from app.services.semantic_search import search_document_chunks
+from app.services.qdrant_vector_store import index_document_embeddings
+
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -55,3 +57,22 @@ def search_document(document_id: str, query: str, top_k: int = 3) -> dict[str, s
         return search_document_chunks(document_id, query, top_k)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc  
+    
+    
+@router.post("/{document_id}/index")
+def index_document(document_id: str) -> dict[str, str | int]:
+    try:
+        return index_document_embeddings(document_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.get("/{document_id}/qdrant-search")
+def qdrant_search_document(document_id: str, query: str, top_k: int = 3) -> dict:
+    from app.services.qdrant_vector_store import search_qdrant_document
+
+    return search_qdrant_document(
+        document_id=document_id,
+        query=query,
+        top_k=top_k,
+    )
