@@ -6,6 +6,7 @@ from app.services.embedding_service import embed_document_chunks
 from app.services.semantic_search import search_document_chunks
 from app.services.qdrant_vector_store import index_document_embeddings, search_qdrant_document
 from app.services.document_pipeline import process_existing_document, upload_and_process_pdf
+from app.services.document_repository import get_document_metadata, list_documents
 
 
 router = APIRouter(prefix="/documents", tags=["documents"])
@@ -98,3 +99,15 @@ async def upload_and_process_document(file: UploadFile = File(...)) -> dict:
         filename=file.filename or "unknown.pdf",
         content=content,
     )
+    
+@router.get("")
+def get_documents() -> dict:
+    return list_documents()
+
+
+@router.get("/{document_id}/metadata")
+def get_document(document_id: str) -> dict:
+    try:
+        return get_document_metadata(document_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
