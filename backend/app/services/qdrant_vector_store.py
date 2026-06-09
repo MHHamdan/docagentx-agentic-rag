@@ -130,3 +130,38 @@ def search_qdrant_document(
         "results": results,
         "source": "qdrant",
     }
+    
+def delete_document_vectors(document_id: str) -> dict[str, Any]:
+    client = get_qdrant_client()
+
+    collection_name = settings.qdrant_collection_name
+    collections = client.get_collections().collections
+    existing_names = {collection.name for collection in collections}
+
+    if collection_name not in existing_names:
+        return {
+            "document_id": document_id,
+            "collection_name": collection_name,
+            "status": "collection_not_found",
+        }
+
+    document_filter = models.Filter(
+        must=[
+            models.FieldCondition(
+                key="document_id",
+                match=models.MatchValue(value=document_id),
+            )
+        ]
+    )
+
+    client.delete(
+        collection_name=collection_name,
+        points_selector=models.FilterSelector(filter=document_filter),
+        wait=True,
+    )
+
+    return {
+        "document_id": document_id,
+        "collection_name": collection_name,
+        "status": "vectors_deleted",
+    }

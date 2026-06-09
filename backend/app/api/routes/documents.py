@@ -8,6 +8,13 @@ from app.services.qdrant_vector_store import index_document_embeddings, search_q
 from app.services.document_pipeline import process_existing_document, upload_and_process_pdf
 from app.services.document_repository import get_document_metadata, list_documents
 
+from app.services.document_repository import (
+    delete_document_artifacts,
+    get_document_metadata,
+    list_documents,
+)
+from app.services.qdrant_vector_store import delete_document_vectors
+
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -111,3 +118,17 @@ def get_document(document_id: str) -> dict:
         return get_document_metadata(document_id)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+    
+    
+    
+@router.delete("/{document_id}")
+def delete_document(document_id: str) -> dict:
+    file_cleanup = delete_document_artifacts(document_id)
+    vector_cleanup = delete_document_vectors(document_id)
+
+    return {
+        "document_id": document_id,
+        "status": "deleted",
+        "file_cleanup": file_cleanup,
+        "vector_cleanup": vector_cleanup,
+    }
