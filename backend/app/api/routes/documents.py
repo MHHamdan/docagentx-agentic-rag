@@ -5,7 +5,8 @@ from app.services.pdf_extractor import extract_text_from_pdf
 from app.services.embedding_service import embed_document_chunks
 from app.services.semantic_search import search_document_chunks
 from app.services.qdrant_vector_store import index_document_embeddings, search_qdrant_document
-from app.services.document_pipeline import process_existing_document
+from app.services.document_pipeline import process_existing_document, upload_and_process_pdf
+
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -81,3 +82,19 @@ def process_document(document_id: str) -> dict:
         return process_existing_document(document_id)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+    
+    
+@router.post("/upload-and-process")
+async def upload_and_process_document(file: UploadFile = File(...)) -> dict:
+    if file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+
+    content = await file.read()
+
+    if not content:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty")
+
+    return upload_and_process_pdf(
+        filename=file.filename or "unknown.pdf",
+        content=content,
+    )
