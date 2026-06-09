@@ -6,12 +6,9 @@ from app.services.embedding_service import embed_document_chunks
 from app.services.semantic_search import search_document_chunks
 from app.services.qdrant_vector_store import index_document_embeddings, search_qdrant_document
 from app.services.document_pipeline import process_existing_document, upload_and_process_pdf
-from app.services.document_repository import get_document_metadata, list_documents
-
 from app.services.document_repository import (
-    delete_document_artifacts,
-    get_document_metadata,
-    list_documents,
+    delete_document_artifacts, get_document_metadata, list_documents
+
 )
 from app.services.qdrant_vector_store import delete_document_vectors
 
